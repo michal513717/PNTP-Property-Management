@@ -4,9 +4,14 @@ import express from 'express';
 import { getMongoClient } from './databases/mongo';
 import { configureLogger } from './utils/logger';
 import { configureNotValidRoute } from './utils/notValidRoute';
-import { EventStore } from './databases/event.store';
 import { debugRequest } from './utils/debugRequest';
 import { APPLICATION_CONFIG } from './utils/applicationConfig';
+import { analyzeMessageValidator } from './validators/analyzeMessege.validator';
+import { createRequestValidator } from './validators/createRequest.validator';
+import { getRequestsValidator } from './validators/getRequests.validator';
+import { MaintenanceRepository } from './repositories/maintenance.repository';
+import { RequestsController } from './controllers/requests.controller';
+import { GetMaintanaceQuery } from './queries/get-maintenance.query';
 
 dotenv.config();
 
@@ -23,15 +28,24 @@ async function main() {
 
     try {
         const mongoClient = await getMongoClient(mongoUri);
-        const eventStore = new EventStore('events.json');
+        // const eventStore = new EventStore('events.json');
 
         if(APPLICATION_CONFIG.DEBUG_REQUEST === true){ 
             debugRequest(app);
         }
 
-        app.post('/analyze', () => {})
-        app.post('/request', () => {})
-        app.get('/requests', () => {})
+        // ---------- Repositories ----------
+        const maintenanceRepository = new MaintenanceRepository();
+
+        // ---------- Queries ----------
+        const getMaintenanceQuery = new GetMaintanaceQuery(maintenanceRepository);
+
+        // ---------- Conrollers ----------
+        const requestsController = new RequestsController(getMaintenanceQuery);
+
+        app.post('/analyze', analyzeMessageValidator,() => {})
+        app.post('/request', createRequestValidator, () => {})
+        app.get('/requests', getRequestsValidator, requestsController.getAllMaintanaces.bind(requestsController));
 
         configureNotValidRoute(app);
 

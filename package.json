@@ -15,6 +15,7 @@
         "log4js": "^6.9.1",
         "lowdb": "^7.0.1",
         "mongoose": "^8.9.3",
+        "openai": "^5.1.0",
         "ts-node-dev": "^2.0.0"
     },
     "devDependencies": {
