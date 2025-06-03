@@ -1,11 +1,4 @@
-import { body, param, query } from 'express-validator';
-
-export const analyzeMessageValidator = [
-  body('message')
-    .notEmpty().withMessage('Message is required.')
-    .isString().withMessage('Message must be a string.')
-    .isLength({ max: 500 }).withMessage('Message cannot exceed 500 characters.')
-];
+import { body } from 'express-validator';
 
 export const createRequestValidator = [
   body('tenantId')
@@ -21,11 +14,4 @@ export const createRequestValidator = [
   body('timestamp')
     .notEmpty().withMessage('Timestamp is required.')
     .isISO8601().withMessage('Timestamp must be a valid ISO8601 string.')
-];
-
-export const getRequestsValidator = [
-  param('priority')
-    .optional()
-    .isIn(['low', 'medium', 'high'])
-    .withMessage("Priority must be one of 'low', 'medium', or 'high'")
 ];
