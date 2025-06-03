@@ -3,13 +3,11 @@ import { MessageAnalyzer } from './messageAnalzyer';
 import { AnalyzedFactors } from '../models/common.models';
 import { MessageKeywordAnalzyerManager } from './messageKeywordAnalzyerManager';
 
-export class MessageAiAnalzyerManager extends MessageAnalyzer {
+export class MessageAiAnalzyerManager {
 
     constructor(
         private messageKeyWordAnalzyer: MessageKeywordAnalzyerManager
-    ){
-        super();
-    }
+    ){}
 
     public async exec(message: string): Promise<AnalyzedFactors> {
         try {

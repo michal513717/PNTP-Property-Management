@@ -12,6 +12,10 @@ import { getRequestsValidator } from './validators/getRequests.validator';
 import { MaintenanceRepository } from './repositories/maintenance.repository';
 import { RequestsController } from './controllers/requests.controller';
 import { GetMaintanaceQuery } from './queries/get-maintenance.query';
+import { MessageAiAnalzyerManager } from './managers/messageAiAnalzyerManager';
+import { MessageKeywordAnalzyerManager } from './managers/messageKeywordAnalzyerManager';
+import { AnalyzerController } from './controllers/analyzerController.controller';
+import { MessageAnalyzer } from './managers/messageAnalzyer';
 
 dotenv.config();
 
@@ -34,6 +38,10 @@ async function main() {
             debugRequest(app);
         }
 
+        const messageKeywordAnalzyerManager = new MessageKeywordAnalzyerManager()
+        const messageAiAnalzyerManager = new MessageAiAnalzyerManager(messageKeywordAnalzyerManager);
+        const messageAnalyzer = new MessageAnalyzer(messageAiAnalzyerManager, messageKeywordAnalzyerManager);
+
         // ---------- Repositories ----------
         const maintenanceRepository = new MaintenanceRepository();
 
@@ -41,9 +49,10 @@ async function main() {
         const getMaintenanceQuery = new GetMaintanaceQuery(maintenanceRepository);
 
         // ---------- Conrollers ----------
-        const requestsController = new RequestsController(getMaintenanceQuery);
+        const requestsController = new RequestsController(getMaintenanceQuery, maintenanceRepository, messageAnalyzer);
+        const analyzerController = new AnalyzerController(messageAnalyzer);
 
-        app.post('/analyze', analyzeMessageValidator,() => {})
+        app.post('/analyze', analyzeMessageValidator, analyzerController.analyzeMessage.bind(analyzerController));
         app.post('/request', createRequestValidator, () => {})
         app.get('/requests', getRequestsValidator, requestsController.getAllMaintanaces.bind(requestsController));
 

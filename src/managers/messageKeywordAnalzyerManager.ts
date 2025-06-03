@@ -1,8 +1,8 @@
 import { AnalyzedFactors, PRIORITY } from "../models/common.models";
 import { MessageAnalyzer } from "./messageAnalzyer";
 
-export class MessageKeywordAnalzyerManager extends MessageAnalyzer {
-    constructor() { super() }
+export class MessageKeywordAnalzyerManager {
+    constructor() {}
 
     public exec(message: string): AnalyzedFactors {
         const highKeywords = [
