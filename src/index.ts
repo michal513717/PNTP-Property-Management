@@ -16,11 +16,11 @@ import { MessageAnalyzer } from './managers/messageAnalzyer';
 
 dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 3000;
-const mongoUri = process.env.MONGODB_URI || '';
+export async function createApp() {
+    const app = express();
+    const port = process.env.PORT || 3000;
+    const mongoUri = process.env.MONGODB_URI || '';
 
-export async function main() {
     configureLogger();
 
     app.use(express.json());
@@ -31,7 +31,7 @@ export async function main() {
         const mongoClient = await getMongoClient(mongoUri);
         // const eventStore = new EventStore('events.json');
 
-        if(APPLICATION_CONFIG.DEBUG_REQUEST === true){ 
+        if (APPLICATION_CONFIG.DEBUG_REQUEST === true) {
             debugRequest(app);
         }
 
@@ -55,15 +55,25 @@ export async function main() {
 
         configureNotValidRoute(app);
 
-        app.listen(port, () => {
-            logger.log(`Server is running on port ${port}`);
-        });
-
+        return app;
     } catch (error) {
         logger.error("error during connection", error);
+        throw error;
     }
 }
 
-main().catch((error) => {
-    console.log(error);
-});
+export async function main() {
+    const app = await createApp();
+    const port = process.env.PORT || 3000;
+    const logger = log4js.getLogger("Main");
+
+    return app.listen(port, () => {
+        logger.log(`Server is running on port ${port}`);
+    });
+}
+
+if (require.main === module) {
+    main().catch((error) => {
+        console.log(error);
+    });
+}
