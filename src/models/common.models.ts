@@ -20,10 +20,16 @@ export enum PRIORITY {
     MEDIUM = "MEDIUM",
     HIGH = "HIGH"
 };
-export interface AnalyzedFactors {
+// export interface AnalyzedFactors {
+//     keywords: string[];
+//     urgencyIndicators: number;
+//     alarmScore: number;
+//     priorityScore: number;
+//     priority: PRIORITY;
+// }
+
+export type AnalyzedFactors = {
     keywords: string[];
-    urgencyIndicators: number;
-    alarmScore: number;
-    priorityScore: number;
     priority: PRIORITY;
+    reason?: string;
 }

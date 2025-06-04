@@ -7,6 +7,8 @@ import { validationResult } from 'express-validator';
 import { ErrorWithCode, ValidationError } from "../utils/errors";
 import { MaintenanceRequest } from "../models/requests.models";
 import { internalServerErrorResponse, validationErrorResponse } from "../utils/responses";
+import { getMaintanacesValidator } from "../validators/getMaintenances.validator";
+import { PRIORITY } from "../models/common.models";
 
 export class RequestsController {
 
@@ -16,9 +18,39 @@ export class RequestsController {
         private messageAnalyzer: MessageAnalyzer,
     ) { }
 
-    async getAllMaintanaces(req: Request, res: Response) {
-        const maintenances = await this.getMaintanaceQuery.execute();
-        res.status(200).send({ result: { message: "Success", maintenances } });
+    async getMaintanacesByPriority(req: Request<{}, {}, {}, {priority: PRIORITY}>, res: Response) {
+        try {
+            
+            await Promise.all(getMaintanacesValidator.map(validation => validation.run(req)));
+
+            if (validationResult(req).isEmpty() === false) {
+                throw new ValidationError();
+            }
+
+            //@ts-ignore
+            const maintenances = await this.getMaintanaceQuery.execute(req.query.priority.toUpperCase());
+            
+            const result = maintenances.map((item) => ({
+                id: item._id,
+                priority: item.priorityLevel,
+                message: item.originalMessage,
+                createdAt: item.submissionDate,
+                resolved: item.resolved
+            }));
+
+            res.status(200).send({ requests: result});
+        } catch (error) {
+
+            if (validationResult(req).isEmpty() === false) {
+                return validationErrorResponse(res, validationResult(req).array());
+            }
+
+            if (error instanceof ErrorWithCode) {
+                return res.status(error.status).json(error.toJSON());
+            }
+
+            return internalServerErrorResponse(res);
+        }
     };
 
     async createMaintance(req: Request<{}, {}, MaintenanceRequest>, res: Response) {
@@ -34,8 +66,8 @@ export class RequestsController {
             const maintenance = {
                 tenantContact: req.body.tenantId,
                 originalMessage: req.body.message,
-                priorityLevel: analyzeResult.priorityScore,
                 submissionDate: req.body.timestamp,
+                priorityLevel: analyzeResult.priority,
                 resolved: false
             };
 
@@ -44,7 +76,10 @@ export class RequestsController {
             res.status(200).json({
                 requestId: createdMaintenance._id,
                 priority: analyzeResult.priority,
-                analyzedFactors: analyzeResult.keywords
+                analyzedFactors: {
+                    keywords: analyzeResult.keywords,
+                    reason: analyzeResult.reason
+                }
             })
         } catch (error) {
             if (validationResult(req).isEmpty() === false) {

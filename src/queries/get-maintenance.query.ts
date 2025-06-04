@@ -1,3 +1,4 @@
+import { PRIORITY } from "../models/common.models";
 import { Maintenance } from "../models/mongoSchemas";
 import { MaintenanceRepository } from "../repositories/maintenance.repository";
 
@@ -6,7 +7,7 @@ export class GetMaintanaceQuery {
         private maintenanceRepository: MaintenanceRepository
     ) { }
 
-    async execute(): Promise<Maintenance[]> {
-        return this.maintenanceRepository.getAll();
+    async execute(priorityLevel: PRIORITY): Promise<Maintenance[]> {
+        return this.maintenanceRepository.getByPriority(priorityLevel);
     }
 }

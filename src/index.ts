@@ -6,9 +6,6 @@ import { configureLogger } from './utils/logger';
 import { configureNotValidRoute } from './utils/notValidRoute';
 import { debugRequest } from './utils/debugRequest';
 import { APPLICATION_CONFIG } from './utils/applicationConfig';
-import { analyzeMessageValidator } from './validators/analyzeMessege.validator';
-import { createRequestValidator } from './validators/createRequest.validator';
-import { getRequestsValidator } from './validators/getRequests.validator';
 import { MaintenanceRepository } from './repositories/maintenance.repository';
 import { RequestsController } from './controllers/requests.controller';
 import { GetMaintanaceQuery } from './queries/get-maintenance.query';
@@ -54,7 +51,7 @@ export async function main() {
 
         app.post('/analyze', analyzerController.analyzeMessage.bind(analyzerController));
         app.post('/request', requestsController.createMaintance.bind(requestsController));
-        app.get('/requests', requestsController.getAllMaintanaces.bind(requestsController));
+        app.get('/requests', requestsController.getMaintanacesByPriority.bind(requestsController));
 
         configureNotValidRoute(app);
 

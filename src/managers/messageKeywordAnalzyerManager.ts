@@ -2,61 +2,58 @@ import { AnalyzedFactors, PRIORITY } from "../models/common.models";
 import { MessageAnalyzer } from "./messageAnalzyer";
 
 export class MessageKeywordAnalzyerManager {
-    constructor() {}
+    constructor() { }
 
     public exec(message: string): AnalyzedFactors {
-        const highKeywords = [
-            'leak', 'burst', 'flood', 'gas', 'fire', 'sparking', 'exposed wires',
-            'no heat', 'smoke', 'broken window', 'sewage', 'frozen pipes'
+        const lowerMessage = message.toLowerCase();
+        const keywords: string[] = [];
+        let priority: PRIORITY = PRIORITY.LOW;
+        let reason = "No urgent issues detected";
+
+        //It should be in some constans 
+        const highPriorityTerms = [
+            { term: 'gas leak', reason: 'Gas leak detected' },
+            { term: 'smell gas', reason: 'Gas odor detected' },
+            { term: 'electrical fire', reason: 'Electrical fire risk' },
+            { term: 'sparks', reason: 'Electrical sparks detected' },
+            { term: 'burst pipe', reason: 'Pipe burst detected' },
+            { term: 'flooding', reason: 'Flooding detected' },
+            { term: 'sewage', reason: 'Sewage issue detected' },
+            { term: 'no heat', reason: 'Heating failure in cold weather' },
+            { term: 'exposed wires', reason: 'Exposed electrical wires' }
         ];
-        const mediumKeywords = [
-            'broken', 'stuck', 'noisy', 'not working', 'malfunctioning', 'jammed'
+
+        const mediumPriorityTerms = [
+            { term: 'leak', reason: 'Water leak detected' },
+            { term: 'broken', reason: 'Broken item needs repair' },
+            { term: 'not working', reason: 'Appliance not functioning' },
+            { term: 'clogged', reason: 'Drain clog detected' }
         ];
-        const lowKeywords = [
-            'paint', 'cosmetic', 'squeaky', 'touch-up', 'minor'
-        ];
 
-        const alarmWords = ['urgent', 'immediately', 'asap', 'dangerous', 'emergency', 'help'];
-
-        let keywords: string[] = [];
-        let urgencyIndicators = 0;
-        let alarmScore = 0;
-
-        const msg = message.toLowerCase();
-
-        function countOccurrences(wordList: string[]) {
-            let count = 0;
-            for (const word of wordList) {
-                if (msg.includes(word)) {
-                    keywords.push(word);
-                    count++;
-                }
+        for (const { term, reason: termReason } of highPriorityTerms) {
+            if (lowerMessage.includes(term)) {
+                keywords.push(term);
+                priority = PRIORITY.HIGH;
+                reason = termReason;
+                break;
             }
-            return count;
         }
 
-        const highCount = countOccurrences(highKeywords);
-        const mediumCount = countOccurrences(mediumKeywords);
-        const lowCount = countOccurrences(lowKeywords);
-        const alarmCount = countOccurrences(alarmWords);
-
-        urgencyIndicators += highCount * 3;
-        urgencyIndicators += mediumCount * 2;
-        urgencyIndicators += lowCount;
-        alarmScore += alarmCount * 2;
-
-        let priority: PRIORITY = PRIORITY.LOW;
-        const totalScore = urgencyIndicators + alarmScore;
-
-        if (totalScore >= 8) priority = PRIORITY.HIGH;
-        else if (totalScore >= 4) priority = PRIORITY.MEDIUM;
+        if (priority !== PRIORITY.HIGH) {
+            for (const { term, reason: termReason } of mediumPriorityTerms) {
+                if (lowerMessage.includes(term)) {
+                    keywords.push(term);
+                    priority = PRIORITY.MEDIUM;
+                    reason = termReason;
+                    break;
+                }
+            }
+        }
 
         return {
             keywords,
-            urgencyIndicators,
-            alarmScore,
-            priorityScore: totalScore / 10,
-            priority
+            priority,
+            reason
         };
     }
 }
