@@ -23,8 +23,8 @@ export class AnalyzerController {
             res.status(200).send({
                 result: {
                     keywords: result.keywords,
-                    urgencyIndicators: result.urgencyIndicators,
-                    priorityScore: result.priorityScore
+                    urgencyIndicators: result.keywords,
+                    priorityScore: result.priority
                 }
             })
         } catch (error) {

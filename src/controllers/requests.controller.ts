@@ -38,7 +38,7 @@ export class RequestsController {
                 resolved: item.resolved
             }));
 
-            res.status(200).send({ requests: result});
+            res.status(200).send({ requests: result });
         } catch (error) {
 
             if (validationResult(req).isEmpty() === false) {
