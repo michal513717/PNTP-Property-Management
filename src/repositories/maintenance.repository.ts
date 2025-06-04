@@ -1,6 +1,7 @@
 import mongoose, { Model } from "mongoose"
 import { Maintenance, MaintenanceDocument, MaintenanceSchema } from "../models/mongoSchemas"
 import * as log4js from 'log4js';
+import { PRIORITY } from "../models/common.models";
 
 const logger = log4js.getLogger();
 
@@ -25,6 +26,11 @@ export class MaintenanceRepository {
             logger.error("Error fetching maintenance", error);
             return null;
         }
+    }
+
+    public async getByPriority(priorityLevel: PRIORITY): Promise<Maintenance[]>{
+        const filter = priorityLevel ? { priorityLevel } : {};
+        return await this.maintenanceModel.find(filter).lean();
     }
 
     public async getAll(): Promise<MaintenanceDocument[]> {
