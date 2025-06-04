@@ -21,9 +21,9 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-const mongoUri = process.env.MONGO_URI || '';
+const mongoUri = process.env.MONGODB_URI || '';
 
-async function main() {
+export async function main() {
     configureLogger();
 
     app.use(express.json());
@@ -53,7 +53,7 @@ async function main() {
         const analyzerController = new AnalyzerController(messageAnalyzer);
 
         app.post('/analyze', analyzerController.analyzeMessage.bind(analyzerController));
-        app.post('/request', () => {})
+        app.post('/request', requestsController.createMaintance.bind(requestsController));
         app.get('/requests', requestsController.getAllMaintanaces.bind(requestsController));
 
         configureNotValidRoute(app);

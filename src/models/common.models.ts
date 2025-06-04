@@ -16,9 +16,9 @@ export enum ERROR_CODES {
     VALIDATION_ERROR = "VALIDATION_ERROR"
 };
 export enum PRIORITY {
-    LOW = "LOW_PRIORITY",
-    MEDIUM = "MEDIUM_PRIORITY",
-    HIGH = "HIGH_PRIORITY"
+    LOW = "LOW",
+    MEDIUM = "MEDIUM",
+    HIGH = "HIGH"
 };
 export interface AnalyzedFactors {
     keywords: string[];

@@ -12,7 +12,7 @@ export class MaintenanceRepository {
         this.maintenanceModel = mongoose.model<MaintenanceDocument>("Maintenance", MaintenanceSchema, 'maintenances');
     }
 
-    async create(maintenanceData: Omit<Maintenance, '_id'>): Promise<any>{
+    async create(maintenanceData: Omit<Maintenance, '_id'>): Promise<Maintenance>{
         const maintenance = new this.maintenanceModel(maintenanceData);
 
         return await maintenance.save();
