@@ -1,24 +1,24 @@
 import mongoose, { Model } from "mongoose"
-import { Maintenance, MaintenanceSchema } from "../models/mongoSchemas"
+import { Maintenance, MaintenanceDocument, MaintenanceSchema } from "../models/mongoSchemas"
 import * as log4js from 'log4js';
 
 const logger = log4js.getLogger();
 
 export class MaintenanceRepository {
 
-    private maintenanceModel: Model<Maintenance>;
+    private maintenanceModel: Model<MaintenanceDocument>;
 
     constructor(){
-        this.maintenanceModel = mongoose.model<Maintenance>("Maintenance", MaintenanceSchema, 'maintenances');
+        this.maintenanceModel = mongoose.model<MaintenanceDocument>("Maintenance", MaintenanceSchema, 'maintenances');
     }
 
-    async create(maintenanceData: Maintenance): Promise<any>{
+    async create(maintenanceData: Omit<Maintenance, '_id'>): Promise<any>{
         const maintenance = new this.maintenanceModel(maintenanceData);
 
         return await maintenance.save();
     };
 
-    public async findById(id: string): Promise<Maintenance | null> {
+    public async findById(id: string): Promise<MaintenanceDocument | null> {
         try {
             return this.maintenanceModel.findById(id).exec();
         } catch (error) {
@@ -27,7 +27,7 @@ export class MaintenanceRepository {
         }
     }
 
-    public async getAll(): Promise<Maintenance[]> {
+    public async getAll(): Promise<MaintenanceDocument[]> {
         try {
             return await this.maintenanceModel.find().lean();
         } catch (error) {

@@ -1,16 +1,25 @@
 import { Document, Schema, Types } from "mongoose"
 
-export type Maintenance = Document & {
+export type Maintenance = {
     _id: Types.ObjectId;
-    tenatContact: string;
+    tenantContact: string;
     originalMessage: string;
     priorityLevel: number;
     submissionDate: Date;
-    resolved: boolean
+    resolved: boolean;
 };
 
-export const MaintenanceSchema = new Schema<Maintenance>({
-    tenatContact: { type: String, required: true },
+export type MaintenanceDocument = Document & {
+    _id: Types.ObjectId;
+    tenantContact: string;
+    originalMessage: string;
+    priorityLevel: number;
+    submissionDate: Date;
+    resolved: boolean;
+};
+
+export const MaintenanceSchema = new Schema<MaintenanceDocument>({
+    tenantContact: { type: String, required: true },
     originalMessage: { type: String, required: true },
     priorityLevel: { type: Number, required: true },
     submissionDate: Date,

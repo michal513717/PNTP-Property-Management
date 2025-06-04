@@ -52,9 +52,9 @@ async function main() {
         const requestsController = new RequestsController(getMaintenanceQuery, maintenanceRepository, messageAnalyzer);
         const analyzerController = new AnalyzerController(messageAnalyzer);
 
-        app.post('/analyze', analyzeMessageValidator, analyzerController.analyzeMessage.bind(analyzerController));
-        app.post('/request', createRequestValidator, () => {})
-        app.get('/requests', getRequestsValidator, requestsController.getAllMaintanaces.bind(requestsController));
+        app.post('/analyze', analyzerController.analyzeMessage.bind(analyzerController));
+        app.post('/request', () => {})
+        app.get('/requests', requestsController.getAllMaintanaces.bind(requestsController));
 
         configureNotValidRoute(app);
 
